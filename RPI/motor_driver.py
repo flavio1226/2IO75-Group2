@@ -1,5 +1,5 @@
 # @author Group 2
-# @created at 02.05.2022
+# @created at 09.05.2022
 # @purpose connect and work with the L293D arduino motor controller
 
 #importing the needed AMSpi library for controlling the motors
