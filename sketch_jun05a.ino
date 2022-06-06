@@ -1,3 +1,7 @@
+/*
+link for yt video: https://www.youtube.com/watch?v=Xz4iVpdMd-w&t=43s
+*/
+
 void setup() {
     Serial.begin(9600);
 }
