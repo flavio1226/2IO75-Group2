@@ -52,16 +52,45 @@ void setup(void) {
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
 }
+
+void testMotor() {
+  analogWrite(enB, 200);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  delay(850);
+}
  
 void loop(void) {
   lcd.setCursor(0, 1);
   delay(1000);
+// analogWrite(enA, 255);
+//    analogWrite(enB, 255);
+//    digitalWrite(in1, LOW);
+//    digitalWrite(in2, HIGH);
+//    digitalWrite(in3, LOW);
+//    digitalWrite(in4, HIGH);
+  driver(returnphotocell());
+// analogWrite(enA, 150);
+//    analogWrite(enB, 150);
+//    digitalWrite(in1, HIGH);
+//    digitalWrite(in2, LOW);
+//    digitalWrite(in3, HIGH);
+//    digitalWrite(in4, LOW);
+// motor b = motor of the push off
+// motor a = motor of the belt
+//  analogWrite(enA, 150);
+//    analogWrite(enB, 150);
+//    digitalWrite(in1, HIGH);
+//    digitalWrite(in2, LOW);
+//    digitalWrite(in3, HIGH);
+//    digitalWrite(in4, LOW);
+//  testMotor();
+//  delay(2000);
 
-//  driver(returnphotocell());
- 
   Serial.print("Analog reading = ");
+  photocellReading = analogRead(photocellPin);
   Serial.println(photocellReading);     // the raw analog reading
- 
+
   // We'll have a few threshholds, qualitatively determined
 //  if (photocellReading < 10) {
 //    Serial.println(" - Dark");
@@ -101,24 +130,34 @@ boolean findOtherColor() {
 void driver(int photocellReading) {
   boolean photocellBool = whiteDiskDetected(photocellReading);
 
-  if (photocellReading >= 3 && photocellReading <= 6) {
+  if (photocellReading >= 5 && photocellReading <= 12) {
     // then disk is white, run backwards:
     analogWrite(enA, 255);
-    analogWrite(enB, 255);
+//    analogWrite(enB, 255);
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
+//    digitalWrite(in3, HIGH);
+    delay(1000);
+    testMotor();
+//    digitalWrite(in4, LOW);
     lcd.print("White disk!");
-  } else if(photocellReading >= 0 && photocellReading <= 2) {
+  } else if(photocellReading >= 0 && photocellReading <= 4) {
     analogWrite(enA, 255);
+//    analogWrite(enB, 255);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+//    digitalWrite(in3, LOW);
+//    digitalWrite(in4, HIGH);
+    delay(1000);
+    testMotor();
+    lcd.print("Black disk!");
+  } else {
+       analogWrite(enA, 255);
     analogWrite(enB, 255);
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
     digitalWrite(in3, LOW);
     digitalWrite(in4, HIGH);
-    lcd.print("Black disk!");
-  } else {
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
       digitalWrite(in3, LOW);
