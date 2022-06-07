@@ -4,14 +4,19 @@ Connect one end of the photocell to 5V, the other end to Analog 0.
 Then connect one end of a 10K resistor from Analog 0 to ground
  
 For more information see http://learn.adafruit.com/photocells */
- 
+
+#include <LiquidCrystal.h>
+
 int photocellPin = 0;     // the cell and 10K pulldown are connected to a0
 int photocellReading;     // the analog reading from the analog resistor divider
-#include <LiquidCrystal.h>
 
 int sensorValue = 0;         // the sensor value
 int sensorMin = 1023;        // minimum sensor value
 int sensorMax = 0;           // maximum sensor value
+
+// variables used for the arduino button
+const int buttonPin = 2; 
+int buttonState = 0; //it will change
 
 
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
@@ -51,6 +56,10 @@ void setup(void) {
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
+
+  //setup for the button
+  Serial.begin(9600);
+  pinMode(buttonPin, INPUT); //initilialize the pushbutton pin as an input
 }
 
 void testMotor() {
@@ -104,6 +113,21 @@ void loop(void) {
 //    Serial.println(" - Very bright");
 //  }
 //  delay(1000);
+
+  //BUTTON
+  // read the state of the pushbutton value:
+  buttonState = digitalRead(buttonPin);
+  // Show the state of pushbutton on serial monitor
+  Serial.println(buttonState);
+  // check if the pushbutton is pressed.
+  // if it is, the buttonState is HIGH:
+  if (buttonState == HIGH) {
+    Serial.println("high");
+  } else {
+    Serial.println("low");
+  }
+  // Added the delay so that we can see the output of button
+  delay(100);
 }
 
 boolean whiteDiskDetected(int photocellReading) { 
