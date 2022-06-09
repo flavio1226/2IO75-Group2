@@ -9,6 +9,9 @@ int photocellPin = 0;     // the cell and 10K pulldown are connected to a0
 int photocellReading;     // the analog reading from the analog resistor divider
 #include <LiquidCrystal.h>
 
+int photocellPin2 = 0;
+int photocellReading2;
+
 int sensorValue = 0;         // the sensor value
 int sensorMin = 1023;        // minimum sensor value
 int sensorMax = 0;           // maximum sensor value
@@ -57,12 +60,17 @@ void testMotor() {
   analogWrite(enB, 200);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
-  delay(850);
+}
+
+void stopMotor() {
+  analogWrite(enB, 0);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
 }
  
 void loop(void) {
   lcd.setCursor(0, 1);
-  delay(1000);
+  // delay(1000);
 // analogWrite(enA, 255);
 //    analogWrite(enB, 255);
 //    digitalWrite(in1, LOW);
@@ -70,6 +78,8 @@ void loop(void) {
 //    digitalWrite(in3, LOW);
 //    digitalWrite(in4, HIGH);
   driver(returnphotocell());
+//testMotor();
+delay(2000);
 // analogWrite(enA, 150);
 //    analogWrite(enB, 150);
 //    digitalWrite(in1, HIGH);
@@ -87,10 +97,14 @@ void loop(void) {
 //  testMotor();
 //  delay(2000);
 
-  Serial.print("Analog reading = ");
+  Serial.print("Analog reading of 1st sensor = ");
   photocellReading = analogRead(photocellPin);
   Serial.println(photocellReading);     // the raw analog reading
-
+//  Serial.print("Analog reading of 2nd sensor = ");
+//  photocellReading2 = analogRead(photocellPin2);
+//  Serial.println(photocellReading2);
+  delay(1000);
+  // the raw analog reading
   // We'll have a few threshholds, qualitatively determined
 //  if (photocellReading < 10) {
 //    Serial.println(" - Dark");
@@ -119,6 +133,8 @@ boolean whiteDiskDetected(int photocellReading) {
 int returnphotocell() {
   delay(2000);
   photocellReading = analogRead(photocellPin);
+  photocellReading2 = analogRead(photocellPin2);
+
   return photocellReading;
 }
 
@@ -130,7 +146,7 @@ boolean findOtherColor() {
 void driver(int photocellReading) {
   boolean photocellBool = whiteDiskDetected(photocellReading);
 
-  if (photocellReading >= 5 && photocellReading <= 12) {
+  if (photocellReading >= 50 && photocellReading <= 75) {
     // then disk is white, run backwards:
     analogWrite(enA, 255);
 //    analogWrite(enB, 255);
@@ -139,9 +155,11 @@ void driver(int photocellReading) {
 //    digitalWrite(in3, HIGH);
     delay(1000);
     testMotor();
+    delay(2000);
+    stopMotor();
 //    digitalWrite(in4, LOW);
     lcd.print("White disk!");
-  } else if(photocellReading >= 0 && photocellReading <= 4) {
+  } else if(photocellReading >= 23 && photocellReading <= 30) {
     analogWrite(enA, 255);
 //    analogWrite(enB, 255);
     digitalWrite(in1, LOW);
@@ -150,6 +168,8 @@ void driver(int photocellReading) {
 //    digitalWrite(in4, HIGH);
     delay(1000);
     testMotor();
+    delay(2000);
+    stopMotor();
     lcd.print("Black disk!");
   } else {
        analogWrite(enA, 255);
