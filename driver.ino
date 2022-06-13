@@ -4,10 +4,12 @@ Connect one end of the photocell to 5V, the other end to Analog 0.
 Then connect one end of a 10K resistor from Analog 0 to ground
  
 For more information see http://learn.adafruit.com/photocells */
- 
+#include <RBD_LightSensor.h>
 int photocellPin = 0;     // the cell and 10K pulldown are connected to a0
 int photocellReading;     // the analog reading from the analog resistor divider
 #include <LiquidCrystal.h>
+
+RBD::LightSensor light_sensor(A0);
 
 int photocellPin2 = 0;
 int photocellReading2;
@@ -37,8 +39,8 @@ int in4 = 4;
  
 void setup(void) {
   lcd.begin(16, 2);
+  lcd.print("State: observing");
   // Print a message to the LCD.
-  lcd.print("hello, world!");
   // We'll send debugging information via the Serial monitor
   Serial.begin(9600);   
   // Set all the motor control pins to outputs
@@ -56,13 +58,52 @@ void setup(void) {
   digitalWrite(in4, LOW);
 }
 
-void testMotor() {
+void testMotor(int color) {
+  if (color == 0){ 
+        lcd.clear();
+
+
+      lcd.setCursor(0, 0);
+
+    lcd.print("State: going to");
+      lcd.setCursor(0, 1);
+    lcd.print("black container");
+  } else if (color == 1) {
+        lcd.clear();
+
+
+
+      lcd.setCursor(0, 0);
+
+    lcd.print("State: going to");
+      lcd.setCursor(0, 1);
+    lcd.print("white container");
+  }
+//  lcd.print("State: observing");
   analogWrite(enB, 200);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
 }
 
-void stopMotor() {
+void stopMotor(int color) {
+  if (color == 0){ 
+    lcd.clear();
+      lcd.setCursor(0, 0);
+
+    lcd.print("State: went to");
+      lcd.setCursor(0, 1);
+    lcd.print("black container");
+
+  } else if (color == 1) {
+        lcd.clear();
+
+
+      lcd.setCursor(0, 0);
+
+    lcd.print("State: went to");
+      lcd.setCursor(0, 1);
+    lcd.print("white container");
+  }
   analogWrite(enB, 0);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
@@ -79,7 +120,7 @@ void loop(void) {
 //    digitalWrite(in4, HIGH);
   driver(returnphotocell());
 //testMotor();
-delay(2000);
+//delay(2000);
 // analogWrite(enA, 150);
 //    analogWrite(enB, 150);
 //    digitalWrite(in1, HIGH);
@@ -99,7 +140,7 @@ delay(2000);
 
   Serial.print("Analog reading of 1st sensor = ");
   photocellReading = analogRead(photocellPin);
-  Serial.println(photocellReading);     // the raw analog reading
+  Serial.println(light_sensor.getPercentValue());     // the raw analog reading
 //  Serial.print("Analog reading of 2nd sensor = ");
 //  photocellReading2 = analogRead(photocellPin2);
 //  Serial.println(photocellReading2);
@@ -131,11 +172,11 @@ boolean whiteDiskDetected(int photocellReading) {
 }
 
 int returnphotocell() {
-  delay(2000);
+  //delay(1000);
   photocellReading = analogRead(photocellPin);
   photocellReading2 = analogRead(photocellPin2);
 
-  return photocellReading;
+  return light_sensor.getPercentValue();
 }
 
 
@@ -146,20 +187,27 @@ boolean findOtherColor() {
 void driver(int photocellReading) {
   boolean photocellBool = whiteDiskDetected(photocellReading);
 
-  if (photocellReading >= 50 && photocellReading <= 75) {
+  if (photocellReading >= 3 && photocellReading <= 5) {
     // then disk is white, run backwards:
+        lcd.clear();
+
+        lcd.print("White disk!");
+     
     analogWrite(enA, 255);
 //    analogWrite(enB, 255);
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
 //    digitalWrite(in3, HIGH);
     delay(1000);
-    testMotor();
+    testMotor(1);
     delay(2000);
-    stopMotor();
+    stopMotor(1);
 //    digitalWrite(in4, LOW);
-    lcd.print("White disk!");
-  } else if(photocellReading >= 23 && photocellReading <= 30) {
+  } else if(photocellReading == 1 ) {
+        lcd.clear();
+
+        lcd.print("Black disk!");
+
     analogWrite(enA, 255);
 //    analogWrite(enB, 255);
     digitalWrite(in1, LOW);
@@ -167,11 +215,17 @@ void driver(int photocellReading) {
 //    digitalWrite(in3, LOW);
 //    digitalWrite(in4, HIGH);
     delay(1000);
-    testMotor();
+    testMotor(0);
     delay(2000);
-    stopMotor();
-    lcd.print("Black disk!");
-  } else {
+    stopMotor(0);
+  } else if (analogRead(photocellPin) == 0) {
+        lcd.clear();
+    lcd.setCursor(0, 0);   
+    lcd.print("Malfunction!");
+    lcd.setCursor(0, 1);
+    lcd.print("Wire plugged out");
+  }else {
+      lcd.clear();
        analogWrite(enA, 255);
     analogWrite(enB, 255);
     digitalWrite(in1, LOW);
@@ -182,7 +236,7 @@ void driver(int photocellReading) {
       digitalWrite(in2, LOW);
       digitalWrite(in3, LOW);
       digitalWrite(in4, LOW);
-      lcd.print("other color detected!");
+      lcd.print("other disk!");
   }
 }
 
