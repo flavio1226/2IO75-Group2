@@ -1,3 +1,7 @@
+#include <Calibrator.h>
+
+
+Calibrator calibrator;
 /* Photocell simple testing sketch. 
  
 Connect one end of the photocell to 5V, the other end to Analog 0.
@@ -38,6 +42,11 @@ int in4 = 4;
 
  
 void setup(void) {
+  calibrator.reset();
+
+  while (millis() < 5000) {
+        calibrator.setValue(analogRead(photocellPin));
+    }
   lcd.begin(16, 2);
   lcd.print("State: observing");
   // Print a message to the LCD.
@@ -111,6 +120,7 @@ void stopMotor(int color) {
  
 void loop(void) {
   lcd.setCursor(0, 1);
+//  directionControl();
   // delay(1000);
 // analogWrite(enA, 255);
 //    analogWrite(enB, 255);
@@ -119,6 +129,8 @@ void loop(void) {
 //    digitalWrite(in3, LOW);
 //    digitalWrite(in4, HIGH);
   driver(returnphotocell());
+  //Serial.print("Sensor value: ");
+//    Serial.print(analogRead(photocellPin));
 //testMotor();
 //delay(2000);
 // analogWrite(enA, 150);
@@ -200,10 +212,10 @@ void driver(int photocellReading) {
 //    digitalWrite(in3, HIGH);
     delay(1000);
     testMotor(1);
-    delay(2000);
+    delay(2500);
     stopMotor(1);
 //    digitalWrite(in4, LOW);
-  } else if(photocellReading == 1 ) {
+  } else if(photocellReading == 2 ) {
         lcd.clear();
 
         lcd.print("Black disk!");
@@ -216,7 +228,7 @@ void driver(int photocellReading) {
 //    digitalWrite(in4, HIGH);
     delay(1000);
     testMotor(0);
-    delay(2000);
+    delay(2500);
     stopMotor(0);
   } else if (analogRead(photocellPin) == 0) {
         lcd.clear();
@@ -236,7 +248,10 @@ void driver(int photocellReading) {
       digitalWrite(in2, LOW);
       digitalWrite(in3, LOW);
       digitalWrite(in4, LOW);
-      lcd.print("other disk!");
+      lcd.setCursor(0, 0);
+      lcd.print("Not detecting either");
+      lcd.setCursor(0, 1);
+      lcd.print("white or black disk");
   }
 }
 
